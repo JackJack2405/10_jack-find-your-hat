@@ -134,11 +134,13 @@
 <p style="display: flex; align-items: center; gap: 1rem;">
 <span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">Game start</span>
 <span style="color: wheat; font-weight:bold; font-size:2rem; ">→</span>
-<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">Read input</span>
+<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">print board</span>
 <span style="color: wheat; font-weight:bold; font-size:2rem;">→</span>
-<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">Update position</span>
+<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">input</span>
 <span style="color: wheat; font-weight:bold; font-size:2rem;">→</span>
-<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">Check rules</span>
+<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">update position</span>
+<span style="color: wheat; font-weight:bold; font-size:2rem;">→</span>
+<span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">check Rules</span>
 <span style="color: wheat; font-weight:bold; font-size:2rem;">→</span>
 <span style="font-weight:bold; color: wheat; background-color: blue; padding: 0.5rem 2rem; border-radius: 0.5em;">End/Continue</span>
 </p>
@@ -167,7 +169,10 @@
 
 - มีฟังก์ชัน generateField(width,height, hol).
 - Tile types (PLAYER, EMPTY, HOLE, HAT).
-- How random placement avoids overlaps.
+- เขียนฟังก์ชัน generateField(width, height, holeRate) เพื่อสร้าง กระดานแบบสุ่ม.
+- โครงสร้างยังเป็น 2D array เหมือนเดิม: field[row][col].
+    - ใช้ loop ซ้อนกัน 2 ชั้น:
+- holeRate = 0.25 มีหลุมอยู่ 25% ของกระดาน
 
 ## <span style="font-weight:bold; color: black; background-color: gold; padding: 0.5rem 2rem;">3. Input Functions</span>
 
@@ -176,9 +181,9 @@
 
 <span style="font-weight:bold; color: gold;">Thinking process should explain:</span>
 
-- Input/output.
-- Edge cases (invalid input, boundaries).
-- How player position is updated.
+- Input: ไม่มี parameter จะอ่านค่าจาก terminal ด้วย prompt(...)
+- Output: ถ้าพิมพ์ถูกต้อง คือ "w", "a", "s", "d" แต่ถ้าพิมพ์นอกจากนี้จะคืน "" 
+- Input ที่ได้จาก getInput() จะส่งไปยัง movePlayer(dir) เพื่อใช้อัพเดต playerRow, playerCol ต่อในการ movement
 
 ## <span style="font-weight:bold; color: black; background-color: gold; padding: 0.5rem 2rem;">4. Movement Functions</span>
 
@@ -187,8 +192,11 @@
 <span style="font-weight:bold; color: gold;">Thinking process should explain:</span>
 
 - Input/output.
-- Edge cases (invalid input, boundaries).
-- How player position is updated.
+
+      - Input: สตริง dir หนึ่งตัว: "w", "a", "s", "d"
+      - Output: ไม่มีค่า return แต่จะเปลี่ยนค่า ตำแหน่งเดิมของเกม playerRow และ playerCol
+- movePlayer จะทำแค่การเปลี่ยนตำแหน่ง ไม่มีการเช็คว่าหลุดจากกระดานไหม
+- ขยับ → ตรวจสถานะ → ตัดสินใจว่าเกมจบหรือเล่นต่อ
 
 ## <span style="font-weight:bold; color: black; background-color: gold; padding: 0.5rem 2rem;">5. Game Rule Functions</span>
 
@@ -196,14 +204,11 @@
 
 <span style="font-weight:bold; color: pink;">&nbsp;Game Rules:&nbsp;</span>
 
-- Wins by finding the hat.
-- Loses by landing in a hole.
-- Loses by moving outside the board.
+- กติกาเกมอยู่ที่ getStatus(board) และ gameEnd(reason)
+- ถ้าอยู่นอกกระดานจะเป็น playerRow ถ้าน้อยกว่า 0 คือนอกกระดาน
+- ในกระดานจะเช็คว่าอยู่ในตำแหน่งงไหน 
+- Lose condition: "out" → เดินออกนอกกระดาน,"hole" → เดินตกหลุม O
 
-<span style="font-weight:bold; color: gold;">Thinking process should explain:</span>
-
-- How to determine win/loss conditions.
-- Handling messages for win/loss conditions.
 
 ## <span style="font-weight:bold; color: black; background-color: gold; padding: 0.5rem 2rem;">6. Game Play Loop</span>
 
@@ -212,10 +217,9 @@
 
 <span style="font-weight:bold; color: gold;">Thinking process should explain:</span>
 
-- How to determine win/loss conditions.
-- Handling messages for win/loss conditions
-- How to update the board when the player moves.
-
+- มีการสร้างกระดานก่อนเข้าลูป คำสั่งคือ const field = generateField(6, 5, 0.25); ช่วยในการกำหนดขนาดกระดานและหลุม
+- ใช้ do while เพื่อให้ลูปเริ่มทำงานเมื่อเริ่มเกมส์
+- แสดงกระดาน > รับinput > ขยับตำแหน่ง > เช็กตำแหน่ง > ถ้ายังไม่ชนะหรือแพ้ก็รับค่าวนซ้ำอีกครั้ง
 ---
 
 
