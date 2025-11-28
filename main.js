@@ -23,9 +23,11 @@ let playing = true;
 
 // Print board
 function printBoard(board) {
-	console.clear(); // call console.clear() before print each move
-	console.log(board);
+  console.clear();
+  const display = board.map((row) => row.join("")).join("\n");
+  console.log(display);
 }
+
 
 // Game play loop
 printBoard(board);

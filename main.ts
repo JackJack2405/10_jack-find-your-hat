@@ -4,7 +4,9 @@ import promptSync from "prompt-sync";
 type Tile = "*" | "░" | "O" | "^";
 type Board = Tile[][];
 
+import PromptSync from "prompt-sync";
 const prompt = promptSync({ sigint: true });
+
 
 // Board tiles
 const PLAYER: Tile = "*";
